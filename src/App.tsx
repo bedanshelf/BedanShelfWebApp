@@ -1,19 +1,7 @@
-import "./App.css";
-import BookCard from "./Components/BookCard";
-import CardContainer from "./Layout/CardContainer";
-import Footer from "./Layout/Footer";
-import NavBar from "./Layout/NavBar";
+import LandingPage from "./Pages/LandingPage";
 
 function App() {
-  return (
-    <>
-      <NavBar></NavBar>
-      <CardContainer title="something">
-        <BookCard></BookCard>
-      </CardContainer>
-      <Footer></Footer>
-    </>
-  );
+  return <LandingPage></LandingPage>;
 }
 
 export default App;

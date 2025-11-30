@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);  
 
   return (
     <nav className="bg-primary text-background sticky top-0 shadow-md z-50">
