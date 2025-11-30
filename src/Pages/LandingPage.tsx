@@ -1,6 +1,6 @@
 import BookCard from "../Components/UI/BookCard";
 import type { BookGenre } from "../Components/UI/BookCard";
-import CardContainer from "../Components/Layout/CardContainer";
+import CardContainer from "../Components/UI/CardContainer";
 
 export default function LandingPage() {
   const testGenreArr: BookGenre[] = [
@@ -11,7 +11,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <CardContainer title="Title here">
+      <CardContainer>
         <BookCard availability="Available" genre={testGenreArr}></BookCard>
         <BookCard></BookCard>
         <BookCard></BookCard>

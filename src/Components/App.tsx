@@ -3,7 +3,7 @@ import MainPageLayout from "./Layout/MainPageLayout";
 import NotFound from "../Pages/NotFound";
 import LandingPage from "../Pages/LandingPage";
 import ProtectedRoute from "../Routes/ProtectedRoute";
-import LoginPage from "../Pages/LoginPage";
+import LoginPage from "./Auth/LoginPage";
 
 function App() {
   return (

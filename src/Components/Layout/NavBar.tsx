@@ -1,12 +1,12 @@
 import { useState } from "react";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);  
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <nav className="bg-primary text-background sticky top-0 shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="text-xl font-bold tracking-wide">Bedan BookShop</div>
+        <div className="text-xl font-bold tracking-wide">BedanShelf</div>
 
         <ul className="hidden md:flex space-x-8 font-medium">
           <li className="hover:text-secondary cursor-pointer">Home</li>
