@@ -1,8 +1,6 @@
-import BookCard from "../Components/BookCard";
-import type { BookGenre } from "../Components/BookCard";
-import CardContainer from "../Layout/CardContainer";
-import Footer from "../Layout/Footer";
-import NavBar from "../Layout/NavBar";
+import BookCard from "../Components/UI/BookCard";
+import type { BookGenre } from "../Components/UI/BookCard";
+import CardContainer from "../Components/Layout/CardContainer";
 
 export default function LandingPage() {
   const testGenreArr: BookGenre[] = [
@@ -13,7 +11,6 @@ export default function LandingPage() {
 
   return (
     <>
-      <NavBar></NavBar>
       <CardContainer title="Title here">
         <BookCard availability="Available" genre={testGenreArr}></BookCard>
         <BookCard></BookCard>
@@ -23,7 +20,6 @@ export default function LandingPage() {
         <BookCard></BookCard>
         <BookCard></BookCard>
       </CardContainer>
-      <Footer></Footer>
     </>
   );
 }
