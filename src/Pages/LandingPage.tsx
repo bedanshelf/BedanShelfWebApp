@@ -12,6 +12,7 @@ export default function LandingPage() {
   return (
     <>
       <CardContainer>
+        {/* Test books card with props */}
         <BookCard availability="Available" genre={testGenreArr}></BookCard>
         <BookCard></BookCard>
         <BookCard></BookCard>
