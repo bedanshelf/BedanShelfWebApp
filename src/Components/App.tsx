@@ -5,6 +5,8 @@ import LandingPage from "../Pages/LandingPage";
 import ProtectedRoute from "../Routes/ProtectedRoute";
 import LoginPage from "./Auth/LoginPage";
 import HomePage from "../Pages/HomePage";
+import RoleProtectedRoute from "../Routes/RoleProtectedRoute";
+import EncodePage from "../Pages/EncodePage";
 
 function App() {
   return (
@@ -12,15 +14,9 @@ function App() {
       <Route path="*" element={<NotFound />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/shelf"
-        element={
-          <ProtectedRoute>
-            <MainPageLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/books" element={<MainPageLayout />}>
         <Route index element={<LandingPage />} />
+        <Route path="/encode" element={<EncodePage></EncodePage>} />
       </Route>
     </Routes>
   );

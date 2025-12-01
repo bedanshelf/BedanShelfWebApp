@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { useAuth } from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import type { Role } from "../Context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const GoToEncodePage = () => {
+    navigate("/encode", { replace: true });
+  };
 
   return (
     <nav className="bg-primary text-background sticky top-0 shadow-md z-50">
@@ -13,6 +22,15 @@ export default function Navbar() {
           <li className="hover:text-secondary cursor-pointer">Books</li>
           <li className="hover:text-secondary cursor-pointer">About</li>
           <li className="hover:text-secondary cursor-pointer">Contact</li>
+          <li
+            className="hover:text-secondary cursor-pointer"
+            onClick={GoToEncodePage}
+          >
+            Encode
+          </li>
+          {/* {user?.role.includes("encoder") && (
+            <li className="hover:text-secondary cursor-pointer">Encode</li>
+          )} */}
         </ul>
 
         <button className="md:hidden focus:outline-none">☰</button>

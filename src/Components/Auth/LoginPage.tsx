@@ -21,7 +21,7 @@ export default function LoginPage() {
   const Login = () => {
     login({ user: "Pons", role: ["admin"] });
 
-    navigate("/shelf", { replace: true });
+    navigate("/books", { replace: true });
   };
 
   const handleRegisterPage = () => {

@@ -8,7 +8,7 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   const BrowseBooks = () => {
-    navigate("/shelf", { replace: true });
+    navigate("/books", { replace: true });
   };
 
   const Login = () => {
