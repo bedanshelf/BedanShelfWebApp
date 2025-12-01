@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import FadeInOnView from "../Components/Animation/FadeInComponent";
 import SanBedaBg from "/san-beda-bg.jpg";
+import HeroButton from "../Components/UI/HeroButton";
+import HeroAccentButton from "../Components/UI/HeroAccentButton";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -31,12 +33,7 @@ export default function HomePage() {
             <p className="text-lg md:text-2xl text-white mb-8">
               Discover amazing books
             </p>
-            <button
-              onClick={BrowseBooks}
-              className="bg-primary text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-primary/90 transition"
-            >
-              Get Started
-            </button>
+            <HeroButton onClick={BrowseBooks}>Get Started</HeroButton>
           </div>
         </section>
       </FadeInOnView>
@@ -108,19 +105,14 @@ export default function HomePage() {
       </section> */}
 
       {/* CTA / FOOTER SECTION */}
-      <FadeInOnView className="py-20 bg-primary text-white text-center">
+      <FadeInOnView className="py-20 px-10 bg-primary text-white text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Ready to Get Started?
         </h2>
         <p className="mb-8 text-lg md:text-xl">
           Join thousands of users and start using the app today.
         </p>
-        <button
-          onClick={Login}
-          className="bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition"
-        >
-          Sign Up Now
-        </button>
+        <HeroAccentButton onClick={Login}>Sign Up Now</HeroAccentButton>
       </FadeInOnView>
     </main>
   );
