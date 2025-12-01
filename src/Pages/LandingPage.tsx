@@ -1,6 +1,6 @@
-import BookCard from "../Components/UI/BookCard";
-import type { BookGenre } from "../Components/UI/BookCard";
-import CardContainer from "../Components/UI/CardContainer";
+import BookCard from "../Components/UI/Cards/BookCard";
+import type { BookGenre } from "../Components/UI/Cards/BookCard";
+import CardContainer from "../Components/UI/Cards/CardContainer";
 
 export default function LandingPage() {
   const testGenreArr: BookGenre[] = [

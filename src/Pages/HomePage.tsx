@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import FadeInOnView from "../Components/Animation/FadeInComponent";
 import SanBedaBg from "/san-beda-bg.jpg";
-import HeroButton from "../Components/UI/HeroButton";
-import HeroAccentButton from "../Components/UI/HeroAccentButton";
+import HeroButton from "../Components/UI/Buttons/HeroButton";
+import HeroAccentButton from "../Components/UI/Buttons/HeroAccentButton";
 
 export default function HomePage() {
   const navigate = useNavigate();

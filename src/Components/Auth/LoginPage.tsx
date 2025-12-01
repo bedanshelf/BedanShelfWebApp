@@ -1,8 +1,8 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { useState } from "react";
-import ButtonPrimary from "../UI/ButtonPrimary";
-import ButtonText from "../UI/ButtonText";
+import ButtonPrimary from "../UI/Buttons/ButtonPrimary";
+import ButtonText from "../UI/Buttons/ButtonText";
 
 interface Inputs {
   email: string;
