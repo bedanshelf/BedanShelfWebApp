@@ -16,7 +16,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/books" element={<MainPageLayout />}>
         <Route index element={<LandingPage />} />
-        <Route path="/encode" element={<EncodePage></EncodePage>} />
+        <Route path="encode" element={<EncodePage />} />
       </Route>
     </Routes>
   );

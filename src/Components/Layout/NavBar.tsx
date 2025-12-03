@@ -9,7 +9,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const GoToEncodePage = () => {
-    navigate("/encode", { replace: true });
+    navigate("encode", { replace: true });
   };
 
   return (
