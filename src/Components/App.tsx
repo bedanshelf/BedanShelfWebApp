@@ -7,6 +7,7 @@ import LoginPage from "./Auth/LoginPage";
 import HomePage from "../Pages/HomePage";
 import RoleProtectedRoute from "../Routes/RoleProtectedRoute";
 import EncodePage from "../Pages/EncodePage";
+import CashierPage from "../Pages/CashierPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/books" element={<MainPageLayout />}>
         <Route index element={<LandingPage />} />
         <Route path="encode" element={<EncodePage />} />
+        <Route path="cashier" element={<CashierPage />} />
       </Route>
     </Routes>
   );
