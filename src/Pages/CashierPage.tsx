@@ -1,26 +1,23 @@
 import { useEffect, useState } from "react";
-import { ref, onValue, get } from "firebase/database";
-import { db } from "../Config/FirebaseConfig"; // your initialized firebase
-
-interface Book {
-  title: string;
-  price: number;
-  genre: string;
-}
+import { ref, onValue, get, set, update } from "firebase/database";
+import { db } from "../Config/FirebaseConfig";
+import type { Book } from "../Services/Models/Book";
+import BookCard from "../Components/UI/Cards/BookCard";
+import ButtonConfirm from "../Components/UI/Buttons/ButtonConfirm";
+import ButtonCancel from "../Components/UI/Buttons/ButtonCancel";
 
 export default function CashierPage() {
   const [barcode, setBarcode] = useState<string | null>(null);
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(false);
+  const [paymentComplete, setPaymentComplete] = useState<boolean>();
 
+  // Listen for barcode scanner
   useEffect(() => {
-    const scanRef = ref(db, "scans/current");
+    const scanRef = ref(db, "scanner/searchBarcode");
 
-    // Listen to incoming barcode scans
     const unsubscribe = onValue(scanRef, async (snapshot) => {
       const scannedCode = snapshot.val();
-
-      console.log("Scanned barcode:", scannedCode);
 
       if (scannedCode) {
         setBarcode(scannedCode);
@@ -31,7 +28,7 @@ export default function CashierPage() {
     return () => unsubscribe();
   }, []);
 
-  // Fetch book info from realtime database
+  // Load Book Info
   async function loadBookData(code: string) {
     setLoading(true);
 
@@ -41,11 +38,39 @@ export default function CashierPage() {
     if (snapshot.exists()) {
       setBook(snapshot.val());
     } else {
-      setBook(null); // no data for that barcode
+      setBook(null);
     }
 
     setLoading(false);
   }
+
+  // Handle Confirm or Cancel
+  const handlePaymentAction = async (action: "confirm" | "cancel") => {
+    if (!book || !barcode) return;
+    // Location of scanned barcode
+    const scanRef = ref(db, "scanner/searchBarcode");
+
+    if (action === "confirm") {
+      // Fade-out animation
+      setPaymentComplete(true);
+
+      // Update availability in Firebase
+      await update(ref(db, `books/${barcode}`), { available: false });
+      await set(scanRef, "");
+
+      // Optional: Reset after animation
+      setTimeout(() => {
+        setBook(null);
+        setBarcode(null);
+        setPaymentComplete(undefined);
+      }, 1500);
+    } else {
+      // Cancel
+      setBook(null);
+      setBarcode(null);
+      await set(scanRef, "");
+    }
+  };
 
   return (
     <div className="p-8">
@@ -58,22 +83,56 @@ export default function CashierPage() {
       {barcode && (
         <div className="mt-4">
           <h2 className="text-xl font-bold">Scanned Code</h2>
-          <p className="text-lg">{barcode}</p>
+          <div className="text-lg bg-textdark w-fit px-3 py-1 rounded-4xl text-white">
+            {barcode}
+          </div>
         </div>
       )}
 
       {loading && <p className="text-blue-500">Loading book details...</p>}
 
       {book && (
-        <div className="mt-6 p-4 border rounded-lg shadow">
-          <h2 className="text-xl font-semibold">{book.title}</h2>
-          <p>Genre: {book.genre}</p>
-          <p className="text-green-600 font-bold text-lg">₱{book.price}</p>
-        </div>
+        <BookCard
+          title={book.title}
+          genre={book.genre}
+          price={book.price}
+          availability={book.available}
+          className={`mx-auto transition-all duration-700 max-w-sm ${
+            paymentComplete ? "opacity-0 scale-95" : "opacity-100"
+          }`}
+        >
+          {!book.available && (
+            <h1 className="font-bold text-red-600 italic mt-5 text-center">
+              Sorry, this book is unavailable
+            </h1>
+          )}
+
+          {book.available && (
+            <ButtonConfirm
+              className="mt-5"
+              onClick={() => handlePaymentAction("confirm")}
+            >
+              Confirm Payment
+            </ButtonConfirm>
+          )}
+
+          <ButtonCancel
+            className="mt-3"
+            onClick={() => handlePaymentAction("cancel")}
+          >
+            Cancel
+          </ButtonCancel>
+        </BookCard>
       )}
 
       {barcode && !loading && !book && (
         <p className="text-red-500 mt-4">No book found for this barcode.</p>
+      )}
+
+      {paymentComplete && (
+        <p className="mt-4 text-green-600 font-bold text-lg text-center">
+          Payment Successful!
+        </p>
       )}
     </div>
   );
