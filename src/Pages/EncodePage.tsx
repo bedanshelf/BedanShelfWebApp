@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../Config/FirebaseConfig";
-import { ref, onValue, set } from "firebase/database";
+import { ref, onValue, set, get } from "firebase/database";
 import GenreTags from "../Components/UI/Tags/GenreTags";
 import BarcodeStatusCard from "../Components/UI/Cards/BarcodeStatusCard";
 
@@ -41,6 +41,7 @@ export default function EncodePage() {
     genre: [] as string[], // MULTIPLE GENRES
     price: "",
   });
+  const [alreadyExists, setAlreadyExists] = useState<Boolean>(false);
 
   // Listen for barcode from ESP32
   useEffect(() => {
@@ -49,12 +50,41 @@ export default function EncodePage() {
     const unsubscribe = onValue(barcodeRef, (snapshot) => {
       const code = snapshot.val();
       if (code) {
-        setBarcode(code);
+        checkBookExists(code);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  const checkBookExists = async (code: string) => {
+    if (!code) return false;
+
+    try {
+      const bookRef = ref(db, `books/${code}`);
+      const snapshot = await get(bookRef);
+
+      if (snapshot.exists()) {
+        setAlreadyExists(true); // book already exists
+        const data = snapshot.val();
+        setBarcode(code);
+        setBookData({
+          title: data.title || "",
+          genre: data.genre || [],
+          price: data.price?.toString() || "",
+        });
+        return true;
+      } else {
+        setAlreadyExists(false); // book does not exist
+        setBookData({ title: "", genre: [], price: "" });
+        setBarcode(code);
+        return false;
+      }
+    } catch (err) {
+      console.error("Error checking book existence:", err);
+      return false;
+    }
+  };
 
   // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +127,7 @@ export default function EncodePage() {
       alert("Book successfully saved!");
       setBookData({ title: "", genre: [], price: "" });
       setBarcode("");
+      setAlreadyExists(false);
     } catch (err) {
       alert("Error saving book: " + err);
     }
@@ -110,7 +141,12 @@ export default function EncodePage() {
       <h1 className="text-3xl font-bold text-primary mb-6">Book Encoding</h1>
 
       {/* BARCODE STATUS */}
-      <BarcodeStatusCard barcode={barcode} />
+      <BarcodeStatusCard
+        barcode={
+          barcode &&
+          (!alreadyExists ? barcode : `Barcode (${barcode}) already exists.`)
+        }
+      />
 
       {/* FORM */}
       {barcode && (
