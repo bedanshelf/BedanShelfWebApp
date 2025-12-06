@@ -1,8 +1,9 @@
 import BookCard from "../Components/UI/Cards/BookCard";
-import type { BookGenre } from "../Components/UI/Cards/BookCard";
+import type { BookGenre } from "../Services/Types/BooksTypes";
 import CardContainer from "../Components/UI/Cards/CardContainer";
 
 export default function LandingPage() {
+  // Just a sample book genre
   const testGenreArr: BookGenre[] = [
     "Science Fiction",
     "Autobiography",
