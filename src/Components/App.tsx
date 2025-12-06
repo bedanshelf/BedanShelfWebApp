@@ -17,8 +17,22 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/books" element={<MainPageLayout />}>
         <Route index element={<LandingPage />} />
-        <Route path="encode" element={<EncodePage />} />
-        <Route path="cashier" element={<CashierPage />} />
+        <Route
+          path="encode"
+          element={
+            <RoleProtectedRoute allowedRoles={["admin", "encoder"]}>
+              <EncodePage />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="cashier"
+          element={
+            <RoleProtectedRoute allowedRoles={["admin", "cashier"]}>
+              <CashierPage />
+            </RoleProtectedRoute>
+          }
+        />
       </Route>
     </Routes>
   );
