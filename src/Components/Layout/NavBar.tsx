@@ -12,6 +12,10 @@ export default function Navbar() {
     navigate("encode", { replace: true });
   };
 
+  const GoToCashierPage = () => {
+    navigate("cashier", { replace: true });
+  };
+
   return (
     <nav className="bg-primary text-background sticky top-0 shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -27,6 +31,12 @@ export default function Navbar() {
             onClick={GoToEncodePage}
           >
             Encode
+          </li>
+          <li
+            className="hover:text-secondary cursor-pointer"
+            onClick={GoToCashierPage}
+          >
+            Cashier
           </li>
           {/* {user?.role.includes("encoder") && (
             <li className="hover:text-secondary cursor-pointer">Encode</li>
