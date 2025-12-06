@@ -7,7 +7,7 @@ export default function MainPageLayout() {
     <>
       <div className="w-vw h-vh overflow-hidden">
         <Navbar></Navbar>
-        <main className="scroller overflow-y-auto">
+        <main className="scroller mx-auto overflow-y-auto max-w-7xl">
           <Outlet />
         </main>
         <Footer></Footer>
