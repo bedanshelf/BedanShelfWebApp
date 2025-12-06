@@ -47,25 +47,18 @@ export default function CashierPage() {
   // Handle Confirm or Cancel
   const handlePaymentAction = async (action: "confirm" | "cancel") => {
     if (!book || !barcode) return;
-    // Location of scanned barcode
     const scanRef = ref(db, "scanner/searchBarcode");
 
     if (action === "confirm") {
-      // Fade-out animation
       setPaymentComplete(true);
-
-      // Update availability in Firebase
       await update(ref(db, `books/${barcode}`), { available: false });
       await set(scanRef, "");
-
-      // Optional: Reset after animation
       setTimeout(() => {
         setBook(null);
         setBarcode(null);
         setPaymentComplete(undefined);
       }, 1500);
     } else {
-      // Cancel
       setBook(null);
       setBarcode(null);
       await set(scanRef, "");
@@ -73,24 +66,44 @@ export default function CashierPage() {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Cashier Mode</h1>
+    <div className="p-8 space-y-6">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h1 className="text-4xl font-bold text-primary">Cashier Mode</h1>
+        {!barcode && (
+          <p className="text-textmuted mt-2">
+            Scan a book to begin the transaction
+          </p>
+        )}
+      </div>
 
+      {/* Waiting for barcode */}
       {!barcode && (
-        <p className="text-gray-500">Waiting for a barcode scan...</p>
+        <p className="text-center text-gray-500 italic">
+          Waiting for a barcode scan...
+        </p>
       )}
 
+      {/* Scanned code card */}
       {barcode && (
-        <div className="mt-4">
-          <h2 className="text-xl font-bold">Scanned Code</h2>
-          <div className="text-lg bg-textdark w-fit px-3 py-1 rounded-4xl text-white">
+        <div className="flex flex-col items-center mb-4">
+          <h2 className="text-xl font-semibold text-textdark mb-1">
+            Scanned Code
+          </h2>
+          <div className="px-5 py-2 bg-secondary text-white rounded-full shadow-md text-lg font-mono">
             {barcode}
           </div>
         </div>
       )}
 
-      {loading && <p className="text-blue-500">Loading book details...</p>}
+      {/* Loading */}
+      {loading && (
+        <p className="text-blue-500 text-center font-medium">
+          Loading book details...
+        </p>
+      )}
 
+      {/* Book details */}
       {book && (
         <BookCard
           title={book.title}
@@ -125,10 +138,14 @@ export default function CashierPage() {
         </BookCard>
       )}
 
+      {/* No book found */}
       {barcode && !loading && !book && (
-        <p className="text-red-500 mt-4">No book found for this barcode.</p>
+        <p className="text-red-500 mt-4 text-center font-medium">
+          No book found for this barcode.
+        </p>
       )}
 
+      {/* Payment complete */}
       {paymentComplete && (
         <p className="mt-4 text-green-600 font-bold text-lg text-center">
           Payment Successful!
