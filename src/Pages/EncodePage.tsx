@@ -2,16 +2,37 @@ import { useEffect, useState } from "react";
 import { db } from "../Config/FirebaseConfig";
 import { ref, onValue, set } from "firebase/database";
 import GenreTags from "../Components/UI/Tags/GenreTags";
+import type { BookGenre } from "../Services/Types/BooksTypes";
+import BarcodeStatusCard from "../Components/UI/Cards/BarcodeStatusCard";
 
 // All genres
 const ALL_GENRES = [
   "Fiction",
   "Non-Fiction",
   "Fantasy",
+  "Science Fiction",
+  "Mystery",
+  "Thriller",
+  "Horror",
   "Romance",
-  "Science",
-  "Education",
-  "History",
+  "Historical",
+  "Young Adult",
+  "Children",
+  "Biography",
+  "Autobiography",
+  "Self-Help",
+  "Business",
+  "Philosophy",
+  "Religion",
+  "Poetry",
+  "Graphic Novel",
+  "Manga",
+  "Educational",
+  "Reference",
+  "Art",
+  "Travel",
+  "Health",
+  "Cooking",
 ];
 
 export default function EncodePage() {
@@ -86,21 +107,11 @@ export default function EncodePage() {
   const remainingGenres = ALL_GENRES.filter((g) => !bookData.genre.includes(g));
 
   return (
-    <div className="min-h-screen bg-background p-6 flex flex-col items-center">
+    <div className="min-h-screen p-6 flex flex-col items-center">
       <h1 className="text-3xl font-bold text-primary mb-6">Book Encoding</h1>
 
       {/* BARCODE STATUS */}
-      <div className="bg-card border border-secondary/40 p-4 rounded-lg w-full max-w-lg shadow">
-        <h2 className="text-lg font-semibold text-textdark mb-2">
-          Barcode Status:
-        </h2>
-
-        {barcode ? (
-          <p className="text-green-600 font-bold">{barcode}</p>
-        ) : (
-          <p className="text-textmuted italic">Waiting for barcode...</p>
-        )}
-      </div>
+      <BarcodeStatusCard barcode={barcode} />
 
       {/* FORM */}
       {barcode && (
