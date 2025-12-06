@@ -5,12 +5,14 @@ import { Outlet } from "react-router-dom";
 export default function MainPageLayout() {
   return (
     <>
-      <div className="w-vw h-vh overflow-hidden">
+      <div className="h-dvh flex flex-col overflow-hidden">
         <Navbar></Navbar>
-        <main className="scroller mx-auto overflow-y-auto max-w-7xl">
-          <Outlet />
+        <main className="scroller overflow-y-auto">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
+          <Footer></Footer>
         </main>
-        <Footer></Footer>
       </div>
     </>
   );
