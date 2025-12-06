@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { db } from "../Config/FirebaseConfig";
 import { ref, onValue, set } from "firebase/database";
 import GenreTags from "../Components/UI/Tags/GenreTags";
-import type { BookGenre } from "../Services/Types/BooksTypes";
 import BarcodeStatusCard from "../Components/UI/Cards/BarcodeStatusCard";
 
 // All genres

@@ -90,7 +90,7 @@ export default function CashierPage() {
           <h2 className="text-xl font-semibold text-textdark mb-1">
             Scanned Code
           </h2>
-          <div className="px-5 py-2 bg-secondary text-white rounded-full shadow-md text-lg font-mono">
+          <div className="px-5 py-2 mt-2 bg-secondary text-white rounded-full shadow-md text-lg font-mono">
             {barcode}
           </div>
         </div>
