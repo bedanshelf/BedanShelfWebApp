@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import { db } from "../Config/FirebaseConfig";
 import { ref, onValue, set } from "firebase/database";
+import GenreTags from "../Components/UI/Tags/GenreTags";
+
+// All genres
+const ALL_GENRES = [
+  "Fiction",
+  "Non-Fiction",
+  "Fantasy",
+  "Romance",
+  "Science",
+  "Education",
+  "History",
+];
 
 export default function EncodePage() {
   const [barcode, setBarcode] = useState<string>("");
   const [bookData, setBookData] = useState({
     title: "",
-    genre: "",
+    genre: [] as string[], // MULTIPLE GENRES
     price: "",
   });
 
   // Listen for barcode from ESP32
   useEffect(() => {
-    const barcodeRef = ref(db, "scanner/currentBarcode");
+    const barcodeRef = ref(db, "scanner/encodeBarcode");
 
     const unsubscribe = onValue(barcodeRef, (snapshot) => {
       const code = snapshot.val();
@@ -24,36 +36,54 @@ export default function EncodePage() {
     return () => unsubscribe();
   }, []);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setBookData({ ...bookData, [e.target.name]: e.target.value });
+  // Handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setBookData({ ...bookData, [name]: value });
   };
 
+  // Add genre tag
+  const addGenre = (genre: string) => {
+    if (!bookData.genre.includes(genre)) {
+      setBookData({ ...bookData, genre: [...bookData.genre, genre] });
+    }
+  };
+
+  // Remove genre tag
+  const removeGenre = (genre: string) => {
+    setBookData({
+      ...bookData,
+      genre: bookData.genre.filter((g) => g !== genre),
+    });
+  };
+
+  // Save book
   const saveBook = async () => {
     if (!barcode) return alert("No barcode scanned.");
 
-    const bookRef = ref(db, `encodedBooks/${barcode}`);
-
+    const bookRef = ref(db, `books/${barcode}`);
     const payload = {
       barcode,
       title: bookData.title,
       genre: bookData.genre,
       price: parseFloat(bookData.price),
+      available: true,
       createdAt: new Date().toISOString(),
     };
 
     try {
       await set(bookRef, payload);
+      await set(ref(db, "scanner/encodeBarcode"), ""); // clear scanner
       alert("Book successfully saved!");
-
-      // Clear fields
-      setBookData({ title: "", genre: "", price: "" });
+      setBookData({ title: "", genre: [], price: "" });
       setBarcode("");
     } catch (err) {
       alert("Error saving book: " + err);
     }
   };
+
+  // Compute remaining options
+  const remainingGenres = ALL_GENRES.filter((g) => !bookData.genre.includes(g));
 
   return (
     <div className="min-h-screen bg-background p-6 flex flex-col items-center">
@@ -79,6 +109,7 @@ export default function EncodePage() {
             Book Information
           </h3>
 
+          {/* Title */}
           <div>
             <label className="block text-textdark mb-1">Title</label>
             <input
@@ -90,25 +121,34 @@ export default function EncodePage() {
             />
           </div>
 
+          {/* Genre as tags + selector */}
           <div>
             <label className="block text-textdark mb-1">Genre</label>
-            <select
-              name="genre"
-              value={bookData.genre}
-              onChange={handleInputChange}
-              className="w-full p-3 rounded border border-secondary/40"
-            >
-              <option value="">Select genre</option>
-              <option>Fiction</option>
-              <option>Non-Fiction</option>
-              <option>Fantasy</option>
-              <option>Romance</option>
-              <option>Science</option>
-              <option>Education</option>
-              <option>History</option>
-            </select>
+
+            {/* Selected tags */}
+            <GenreTags
+              genres={bookData.genre}
+              onRemove={removeGenre}
+              removable
+            />
+            {/* Selector for remaining genres */}
+            {remainingGenres.length > 0 && (
+              <select
+                value=""
+                onChange={(e) => addGenre(e.target.value)}
+                className="w-full p-3 rounded border border-secondary/40"
+              >
+                <option value="">Select genre</option>
+                {remainingGenres.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
+          {/* Price */}
           <div>
             <label className="block text-textdark mb-1">Price</label>
             <input
