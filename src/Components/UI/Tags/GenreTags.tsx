@@ -16,7 +16,7 @@ export default function GenreTags({
       {genres.map((genre) => (
         <span
           key={genre}
-          className="bg-primary/20 text-primary px-3 py-1 rounded-full flex items-center gap-1"
+          className="bg-primary/20 text-primary text-xs italic px-2 py-1 rounded-full flex items-center gap-1"
         >
           {genre}
           {removable && onRemove && (
