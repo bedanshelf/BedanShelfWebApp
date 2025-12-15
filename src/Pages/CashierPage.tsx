@@ -39,6 +39,14 @@ export default function CashierPage() {
       setBook(snapshot.val());
     } else {
       setBook(null);
+
+      // ❗ If book doesn't exist: show message then reset after 3 sec
+      const scanRef = ref(db, "scanner/searchBarcode");
+
+      setTimeout(async () => {
+        await set(scanRef, "");
+        setBarcode(null);
+      }, 3000);
     }
 
     setLoading(false);
@@ -67,7 +75,6 @@ export default function CashierPage() {
 
   return (
     <div className="p-8 space-y-6 min-h-screen">
-      {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-4xl font-bold text-primary">Cashier Mode</h1>
         {!barcode && (
@@ -77,14 +84,12 @@ export default function CashierPage() {
         )}
       </div>
 
-      {/* Waiting for barcode */}
       {!barcode && (
         <p className="text-center text-gray-500 italic">
           Waiting for a barcode scan...
         </p>
       )}
 
-      {/* Scanned code card */}
       {barcode && (
         <div className="flex flex-col items-center mb-4">
           <h2 className="text-xl font-semibold text-textdark mb-1">
@@ -96,14 +101,12 @@ export default function CashierPage() {
         </div>
       )}
 
-      {/* Loading */}
       {loading && (
         <p className="text-blue-500 text-center font-medium">
           Loading book details...
         </p>
       )}
 
-      {/* Book details */}
       {book && (
         <BookCard
           title={book.title}
@@ -138,14 +141,13 @@ export default function CashierPage() {
         </BookCard>
       )}
 
-      {/* No book found */}
+      {/* 🔴 Book not found message */}
       {barcode && !loading && !book && (
         <p className="text-red-500 mt-4 text-center font-medium">
-          No book found for this barcode.
+          No book found for this barcode. Resetting...
         </p>
       )}
 
-      {/* Payment complete */}
       {paymentComplete && (
         <p className="mt-4 text-green-600 font-bold text-lg text-center">
           Payment Successful!

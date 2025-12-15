@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { logoutUser } from "../../Services/AuthService";
 
 interface NavItem {
   name: string;
@@ -14,6 +15,13 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleLogout = async () => {
+    await logoutUser();
+    logout();
+
+    navigate("/login", { replace: true });
+  };
+
   const goTo = (path: string) => {
     navigate(path, { replace: true });
     setIsOpen(false); // close mobile menu after navigation
@@ -22,8 +30,8 @@ export default function Navbar() {
   const navItems: NavItem[] = [
     { name: "Home", path: "/" },
     { name: "Books", path: "/books" },
-    { name: "Encode", path: "/encode", roles: ["encoder", "admin"] },
-    { name: "Cashier", path: "/cashier", roles: ["cashier", "admin"] },
+    { name: "Encode", path: "/books/encode", roles: ["encoder", "admin"] },
+    { name: "Cashier", path: "/books/cashier", roles: ["cashier", "admin"] },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -56,10 +64,20 @@ export default function Navbar() {
     `}
       >
         {/* Account Section */}
-        <div className="px-4 py-6 border-b border-secondary/30">
-          {/* <h2 className="text-lg font-semibold">{user?.role || "Account"}</h2> */}
-          <p className="text-sm opacity-70">{user?.role?.join(", ")}</p>
-        </div>
+        {user && (
+          <div className="px-4 py-6 border-b border-secondary/30">
+            <h2 className="text-lg font-semibold">{`Hello, ${
+              user?.name || "user"
+            }`}</h2>
+            <p className="text-sm opacity-70">
+              {user?.role
+                .map(
+                  (r) => r.charAt(0).toUpperCase() + r.slice(1).toLowerCase()
+                )
+                .join(", ")}
+            </p>
+          </div>
+        )}
 
         {/* Navigation Items */}
         <ul className="flex flex-col flex-1 px-4 py-4 space-y-2">
@@ -83,12 +101,14 @@ export default function Navbar() {
             );
           })}
 
-          <button
-            className="mt-auto w-full hover:bg-secondary/90 cursor-pointer bg-secondary text-primary py-2 rounded font-semibold"
-            onClick={() => logout()}
-          >
-            Logout
-          </button>
+          {user && (
+            <button
+              className="mt-auto w-full hover:bg-secondary/90 cursor-pointer bg-secondary text-primary py-2 rounded font-semibold"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          )}
         </ul>
       </div>
     </nav>

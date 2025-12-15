@@ -33,7 +33,7 @@ export default function HomePage() {
             <p className="text-lg md:text-2xl text-white mb-8">
               Discover amazing books
             </p>
-            <HeroButton onClick={BrowseBooks}>Get Started</HeroButton>
+            <HeroButton onClick={BrowseBooks}>Browse now</HeroButton>
           </div>
         </section>
       </FadeInOnView>
@@ -110,7 +110,7 @@ export default function HomePage() {
           Ready to Get Started?
         </h2>
         <p className="mb-8 text-lg md:text-xl">
-          Join thousands of users and start using the app today.
+          Join other users and start using the app today.
         </p>
         <HeroAccentButton onClick={Login}>Sign Up Now</HeroAccentButton>
       </FadeInOnView>

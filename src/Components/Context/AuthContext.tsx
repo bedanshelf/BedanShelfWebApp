@@ -1,9 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { getCurrentUser } from "../../Services/AuthService";
 
 export type Role = "user" | "admin" | "encoder" | "cashier";
 
-interface User {
-  user: string;
+export interface User {
+  uid: string;
+  email: string;
+  name: string;
   role: Role[];
 }
 
@@ -16,10 +19,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  // Initialize user from localStorage
+  const [user, setUser] = useState<User | null>(getCurrentUser());
 
-  const login = (user: User) => setUser(user);
-  const logout = () => setUser(null);
+  // Login function
+  const login = (user: User) => {
+    setUser(user);
+    localStorage.setItem("currentUser", JSON.stringify(user));
+  };
+
+  // Logout function
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("currentUser");
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
@@ -30,8 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-
   if (!ctx) throw new Error("useAuth must be used within AuthContext only.");
-
   return ctx;
 }

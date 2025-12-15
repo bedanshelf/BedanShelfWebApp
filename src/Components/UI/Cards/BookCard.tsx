@@ -39,7 +39,9 @@ export default function BookCard({
         {title == "" ? "No title" : title}
       </h3>
       <GenreTags genres={genre} />
-      <p className="text-primary font-bold mt-3">₱{price.toFixed(2)}</p>
+      <p className="text-primary font-bold mt-3">
+        ₱{new Intl.NumberFormat("en-PH").format(price)}
+      </p>
       {children}
     </div>
   );

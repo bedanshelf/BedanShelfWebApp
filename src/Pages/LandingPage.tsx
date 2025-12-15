@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-import { getDatabase, ref, get } from "firebase/database";
+import { ref, get } from "firebase/database";
+import { db } from "../Config/FirebaseConfig";
 import BookCard from "../Components/UI/Cards/BookCard";
 import CardContainer from "../Components/UI/Cards/CardContainer";
 import type { BookGenre } from "../Services/Types/BooksTypes";
@@ -9,6 +10,7 @@ interface Book {
   title: string;
   availability: boolean;
   genre: BookGenre[];
+  price: number;
 }
 
 export default function LandingPage() {
@@ -25,7 +27,6 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const db = getDatabase();
         const booksRef = ref(db, "books/");
         const snapshot = await get(booksRef);
 
@@ -35,8 +36,9 @@ export default function LandingPage() {
           const formattedBooks: Book[] = Object.keys(data).map((key) => ({
             id: key,
             title: data[key].title ?? "Untitled Book",
-            availability: data[key].availability ?? false,
+            availability: data[key].available ?? false,
             genre: data[key].genre ?? [],
+            price: data[key].price ?? 0,
           }));
 
           setBooks(formattedBooks);
@@ -114,6 +116,7 @@ export default function LandingPage() {
                 title={book.title}
                 availability={book.availability}
                 genre={book.genre}
+                price={book.price}
               />
             ))
           ) : (

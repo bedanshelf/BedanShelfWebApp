@@ -1,4 +1,23 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Footer() {
+  const navigate = useNavigate();
+
+  interface NavItem {
+    name: string;
+    path: string;
+    roles?: string[]; // optional: roles allowed to see this link
+  }
+
+  const navItems: NavItem[] = [
+    { name: "Home", path: "/" },
+    { name: "Books", path: "/books" },
+  ];
+
+  const navigateTo = (route: string) => {
+    navigate(route, { replace: true });
+  };
+
   return (
     <footer className="bg-textdark text-background py-8">
       <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between">
@@ -12,10 +31,15 @@ export default function Footer() {
         <div className="mt-6 md:mt-0">
           <h3 className="font-semibold text-card mb-2">Quick Links</h3>
           <ul className="space-y-2 text-textmuted">
-            <li className="hover:text-secondary cursor-pointer">Home</li>
-            <li className="hover:text-secondary cursor-pointer">Books</li>
-            <li className="hover:text-secondary cursor-pointer">About</li>
-            <li className="hover:text-secondary cursor-pointer">Contact</li>
+            {navItems.map((item) => (
+              <li
+                key={item.name + item.path}
+                onClick={() => navigateTo(item.path)}
+                className="hover:text-secondary cursor-pointer"
+              >
+                {item.name}
+              </li>
+            ))}
           </ul>
         </div>
 
