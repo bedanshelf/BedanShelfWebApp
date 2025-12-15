@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { ref, get } from "firebase/database";
+import { ref, onValue, off } from "firebase/database";
 import { db } from "../Config/FirebaseConfig";
 import BookCard from "../Components/UI/Cards/BookCard";
 import CardContainer from "../Components/UI/Cards/CardContainer";
@@ -25,11 +25,11 @@ export default function LandingPage() {
   const [allGenres, setAllGenres] = useState<(BookGenre | "All")[]>([]);
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const booksRef = ref(db, "books/");
-        const snapshot = await get(booksRef);
+    const booksRef = ref(db, "books/");
 
+    const unsubscribe = onValue(
+      booksRef,
+      (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
 
@@ -45,20 +45,26 @@ export default function LandingPage() {
 
           // Extract all unique genres
           const genres = new Set<BookGenre>();
-
           formattedBooks.forEach((book) => {
             book.genre.forEach((g) => genres.add(g as BookGenre));
           });
+
           setAllGenres(["All", ...Array.from(genres)]);
+        } else {
+          setBooks([]);
+          setAllGenres(["All"]);
         }
-      } catch (error) {
-        console.error("Error fetching books:", error);
-      } finally {
+
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Realtime fetch error:", error);
         setIsLoading(false);
       }
-    };
+    );
 
-    fetchBooks();
+    // Cleanup listener on unmount
+    return () => off(booksRef);
   }, []);
 
   // Memoized Filtering
@@ -79,19 +85,19 @@ export default function LandingPage() {
   return (
     <div className="px-6 py-4">
       {/* Search + Filter UI */}
-      <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
         {/* Search Bar */}
         <input
           type="text"
           placeholder="Search books by title..."
-          className="w-full md:w-1/2 px-4 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-primary focus:outline-none"
+          className="w-full cxs:max-w-96 px-4 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-primary focus:outline-none"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         {/* Genre Dropdown */}
         <select
-          className="px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring focus:ring-primary"
+          className="px-4 py-2 rounded-lg border w-full cxs:max-w-60 border-gray-300 bg-white focus:ring focus:ring-primary"
           value={selectedGenre}
           onChange={(e) => setSelectedGenre(e.target.value as BookGenre)}
         >
