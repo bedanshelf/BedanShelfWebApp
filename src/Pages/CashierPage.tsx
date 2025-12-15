@@ -6,29 +6,38 @@ import BookCard from "../Components/UI/Cards/BookCard";
 import ButtonConfirm from "../Components/UI/Buttons/ButtonConfirm";
 import ButtonCancel from "../Components/UI/Buttons/ButtonCancel";
 
-export default function CashierPage() {
-  const [barcode, setBarcode] = useState<string | null>(null);
-  const [book, setBook] = useState<Book | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [paymentComplete, setPaymentComplete] = useState<boolean>();
+interface CartItem {
+  barcode: string;
+  book: Book;
+}
 
-  // Listen for barcode scanner
+export default function CashierPage() {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [paymentComplete, setPaymentComplete] = useState(false);
+
+  /* 🔁 Listen for barcode scanner */
   useEffect(() => {
     const scanRef = ref(db, "scanner/searchBarcode");
 
     const unsubscribe = onValue(scanRef, async (snapshot) => {
       const scannedCode = snapshot.val();
+      if (!scannedCode) return;
 
-      if (scannedCode) {
-        setBarcode(scannedCode);
-        loadBookData(scannedCode);
+      // Prevent duplicate scans
+      if (cart.some((item) => item.barcode === scannedCode)) {
+        await set(scanRef, "");
+        return;
       }
+
+      loadBookData(scannedCode);
+      await set(scanRef, ""); // reset scanner value
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [cart]);
 
-  // Load Book Info
+  /* 📚 Load book and add to cart */
   async function loadBookData(code: string) {
     setLoading(true);
 
@@ -36,120 +45,92 @@ export default function CashierPage() {
     const snapshot = await get(bookRef);
 
     if (snapshot.exists()) {
-      setBook(snapshot.val());
+      const book = snapshot.val();
+
+      if (!book.available) {
+        alert("Book is unavailable");
+      } else {
+        setCart((prev) => [...prev, { barcode: code, book }]);
+      }
     } else {
-      setBook(null);
-
-      // ❗ If book doesn't exist: show message then reset after 3 sec
-      const scanRef = ref(db, "scanner/searchBarcode");
-
-      setTimeout(async () => {
-        await set(scanRef, "");
-        setBarcode(null);
-      }, 3000);
+      alert("Book not found");
     }
 
     setLoading(false);
   }
 
-  // Handle Confirm or Cancel
-  const handlePaymentAction = async (action: "confirm" | "cancel") => {
-    if (!book || !barcode) return;
-    const scanRef = ref(db, "scanner/searchBarcode");
+  /* ✅ Confirm payment for ALL books */
+  const handleConfirmPayment = async () => {
+    if (cart.length === 0) return;
 
-    if (action === "confirm") {
-      setPaymentComplete(true);
-      await update(ref(db, `books/${barcode}`), { available: false });
-      await set(scanRef, "");
-      setTimeout(() => {
-        setBook(null);
-        setBarcode(null);
-        setPaymentComplete(undefined);
-      }, 1500);
-    } else {
-      setBook(null);
-      setBarcode(null);
-      await set(scanRef, "");
-    }
+    const updates: Record<string, any> = {};
+
+    cart.forEach((item) => {
+      updates[`books/${item.barcode}/available`] = false;
+    });
+
+    await update(ref(db), updates);
+
+    setPaymentComplete(true);
+    setTimeout(() => {
+      setCart([]);
+      setPaymentComplete(false);
+    }, 1500);
   };
+
+  /* ❌ Clear / Cancel all */
+  const handleClearCart = async () => {
+    setCart([]);
+    await set(ref(db, "scanner/searchBarcode"), "");
+  };
+
+  /* 💰 Total price */
+  const totalPrice = cart.reduce((sum, item) => sum + item.book.price, 0);
 
   return (
     <div className="p-8 space-y-6 min-h-screen">
-      <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold text-primary">Cashier Mode</h1>
-        {!barcode && (
-          <p className="text-textmuted mt-2">
-            Scan a book to begin the transaction
-          </p>
-        )}
-      </div>
+      <h1 className="text-4xl font-bold text-primary text-center">
+        Cashier Mode
+      </h1>
 
-      {!barcode && (
+      {loading && <p className="text-blue-500 text-center">Loading book...</p>}
+
+      {/* 🛒 Cart */}
+      {cart.length === 0 && (
         <p className="text-center text-gray-500 italic">
-          Waiting for a barcode scan...
+          Scan books to add to cart
         </p>
       )}
 
-      {barcode && (
-        <div className="flex flex-col items-center mb-4">
-          <h2 className="text-xl font-semibold text-textdark mb-1">
-            Scanned Code
+      <div className="grid gap-4 max-w-5xl mx-auto justify-center place-items-center [grid-template-columns:repeat(auto-fit,minmax(var(--container-3xs),max-content))]">
+        {cart.map((item) => (
+          <BookCard
+            key={item.barcode}
+            title={item.book.title}
+            genre={item.book.genre}
+            price={item.book.price}
+            availability={item.book.available}
+          />
+        ))}
+      </div>
+
+      {/* 💵 Summary */}
+      {cart.length > 0 && (
+        <div className="max-w-xl mx-auto text-center space-y-4">
+          <h2 className="text-xl font-semibold">
+            Total: ₱{totalPrice.toLocaleString()}
           </h2>
-          <div className="px-5 py-2 mt-2 bg-secondary text-white rounded-full shadow-md text-lg font-mono">
-            {barcode}
-          </div>
+
+          <ButtonConfirm onClick={handleConfirmPayment}>
+            Confirm Payment
+          </ButtonConfirm>
+
+          <ButtonCancel onClick={handleClearCart}>Cancel All</ButtonCancel>
         </div>
       )}
 
-      {loading && (
-        <p className="text-blue-500 text-center font-medium">
-          Loading book details...
-        </p>
-      )}
-
-      {book && (
-        <BookCard
-          title={book.title}
-          genre={book.genre}
-          price={book.price}
-          availability={book.available}
-          className={`mx-auto transition-all duration-700 max-w-sm ${
-            paymentComplete ? "opacity-0 scale-95" : "opacity-100"
-          }`}
-        >
-          {!book.available && (
-            <h1 className="font-bold text-red-600 italic mt-5 text-center">
-              Sorry, this book is unavailable
-            </h1>
-          )}
-
-          {book.available && (
-            <ButtonConfirm
-              className="mt-5"
-              onClick={() => handlePaymentAction("confirm")}
-            >
-              Confirm Payment
-            </ButtonConfirm>
-          )}
-
-          <ButtonCancel
-            className="mt-3"
-            onClick={() => handlePaymentAction("cancel")}
-          >
-            Cancel
-          </ButtonCancel>
-        </BookCard>
-      )}
-
-      {/* 🔴 Book not found message */}
-      {barcode && !loading && !book && (
-        <p className="text-red-500 mt-4 text-center font-medium">
-          No book found for this barcode. Resetting...
-        </p>
-      )}
-
       {paymentComplete && (
-        <p className="mt-4 text-green-600 font-bold text-lg text-center">
+        <p className="text-green-600 font-bold text-center text-lg">
           Payment Successful!
         </p>
       )}
