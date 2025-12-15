@@ -32,6 +32,7 @@ export default function Navbar() {
     { name: "Books", path: "/books" },
     { name: "Encode", path: "/books/encode", roles: ["encoder", "admin"] },
     { name: "Cashier", path: "/books/cashier", roles: ["cashier", "admin"] },
+    { name: "Admin Mode", path: "/books/admin", roles: ["admin"] },
   ];
 
   const isActive = (path: string) => location.pathname === path;

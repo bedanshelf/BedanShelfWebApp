@@ -1,17 +1,12 @@
-import type { JSX } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../Components/Context/AuthContext";
 import type { Role } from "../Components/Context/AuthContext";
 
 interface PropsType {
-  children: JSX.Element;
   allowedRoles: Role[];
 }
 
-export default function RoleProtectedRoute({
-  children,
-  allowedRoles,
-}: PropsType) {
+export default function RoleProtectedRoute({ allowedRoles }: PropsType) {
   const { user } = useAuth();
 
   if (!user) {
@@ -24,5 +19,5 @@ export default function RoleProtectedRoute({
     return <Navigate to="*" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
