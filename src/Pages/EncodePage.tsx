@@ -3,6 +3,8 @@ import { db } from "../Config/FirebaseConfig";
 import { ref, onValue, set, get } from "firebase/database";
 import GenreTags from "../Components/UI/Tags/GenreTags";
 import BarcodeStatusCard from "../Components/UI/Cards/BarcodeStatusCard";
+import ButtonConfirm from "../Components/UI/Buttons/ButtonConfirm";
+import ButtonCancel from "../Components/UI/Buttons/ButtonCancel";
 
 // All genres
 const ALL_GENRES = [
@@ -90,6 +92,20 @@ export default function EncodePage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setBookData({ ...bookData, [name]: value });
+  };
+
+  const cancelEncode = async () => {
+    try {
+      // Clear barcode in Firebase (important so ESP32 can scan again)
+      await set(ref(db, "scanner/encodeBarcode"), "");
+
+      // Reset local UI state
+      setBarcode("");
+      setBookData({ title: "", genre: [], price: "" });
+      setAlreadyExists(false);
+    } catch (err) {
+      console.error("Error cancelling encode:", err);
+    }
   };
 
   // Add genre tag
@@ -207,12 +223,10 @@ export default function EncodePage() {
             />
           </div>
 
-          <button
-            onClick={saveBook}
-            className="w-full bg-primary text-white font-semibold p-3 rounded-lg hover:bg-primary/80 transition"
-          >
-            Save Book
-          </button>
+          <div className="flex gap-3 mt-4">
+            <ButtonConfirm onClick={saveBook}>Save Book</ButtonConfirm>
+            <ButtonCancel onClick={cancelEncode}>Cancel</ButtonCancel>
+          </div>
         </div>
       )}
     </div>
