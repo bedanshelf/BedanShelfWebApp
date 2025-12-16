@@ -78,13 +78,15 @@ export default function CashierPage() {
     }, 1500);
   };
 
-  /* ❌ Clear / Cancel all */
   const handleClearCart = async () => {
     setCart([]);
     await set(ref(db, "scanner/searchBarcode"), "");
   };
 
-  /* 💰 Total price */
+  const handleRemoveItem = (barcode: string) => {
+    setCart((prev) => prev.filter((item) => item.barcode !== barcode));
+  };
+
   const totalPrice = cart.reduce((sum, item) => sum + item.book.price, 0);
 
   return (
@@ -95,7 +97,6 @@ export default function CashierPage() {
 
       {loading && <p className="text-blue-500 text-center">Loading book...</p>}
 
-      {/* 🛒 Cart */}
       {cart.length === 0 && (
         <p className="text-center text-gray-500 italic">
           Scan books to add to cart
@@ -104,17 +105,26 @@ export default function CashierPage() {
 
       <div className="grid gap-4 max-w-5xl mx-auto justify-center place-items-center [grid-template-columns:repeat(auto-fit,minmax(var(--container-3xs),max-content))]">
         {cart.map((item) => (
-          <BookCard
-            key={item.barcode}
-            title={item.book.title}
-            genre={item.book.genre}
-            price={item.book.price}
-            availability={item.book.available}
-          />
+          <div key={item.barcode} className=" flex relative">
+            <button
+              onClick={() => handleRemoveItem(item.barcode)}
+              className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-start cursor-pointer justify-center hover:bg-red-600 transition"
+              title="Remove item"
+            >
+              <p>x</p>
+            </button>
+
+            <BookCard
+              title={item.book.title}
+              genre={item.book.genre}
+              price={item.book.price}
+              availability={item.book.available}
+              className="w-full"
+            />
+          </div>
         ))}
       </div>
 
-      {/* 💵 Summary */}
       {cart.length > 0 && (
         <div className="max-w-xl mx-auto text-center space-y-4">
           <h2 className="text-xl font-semibold">
