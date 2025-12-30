@@ -48,9 +48,7 @@ export default function Footer() {
           <p className="text-sm text-textmuted">
             San Beda University – SHS Dept.
           </p>
-          <p className="text-sm text-textmuted">
-            Email: bookstore@sanbeda.edu.ph
-          </p>
+          <p className="text-sm text-textmuted">Email: bedanshelf@gmail.com</p>
         </div>
       </div>
 
