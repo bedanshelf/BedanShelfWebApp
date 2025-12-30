@@ -55,7 +55,7 @@ export default function Footer() {
       </div>
 
       <p className="text-center text-xs text-secondary mt-6">
-        © {new Date().getFullYear()} Bedan BookShop. All rights reserved.
+        © {new Date().getFullYear()} BedanShelf. All rights reserved.
       </p>
     </footer>
   );
