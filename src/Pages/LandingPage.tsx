@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { ref, onValue, off } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { db } from "../Config/FirebaseConfig";
 import BookCard from "../Components/UI/Cards/BookCard";
 import CardContainer from "../Components/UI/Cards/CardContainer";
@@ -64,7 +64,7 @@ export default function LandingPage() {
     );
 
     // Cleanup listener on unmount
-    return () => off(booksRef);
+    return () => unsubscribe();
   }, []);
 
   // Memoized Filtering
