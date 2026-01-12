@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser } from "../../Services/AuthService";
+import BedanShelfWhiteLogo from "/white-icon.svg";
 
 interface NavItem {
   name: string;
@@ -41,15 +42,20 @@ export default function Navbar() {
     <nav className="bg-primary text-background sticky top-0 shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div
-          className="text-xl font-bold tracking-wide cursor-pointer"
+          className="text-xl font-bold tracking-wide cursor-pointer flex items-center gap-2"
           onClick={() => goTo("/")}
         >
-          BedanShelf
+          <img
+            className="w-15 h-15"
+            src={BedanShelfWhiteLogo}
+            alt="BedanShelf Logo"
+          />
+          <h1 className="text-2xl">BedanShelf</h1>
         </div>
 
         {/* Mobile Burger */}
         <button
-          className="fixed top-3.5 right-4 z-50 focus:outline-none text-2xl"
+          className="fixed top-7 right-4 z-50 focus:outline-none text-2xl"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? "✕" : "☰"}
